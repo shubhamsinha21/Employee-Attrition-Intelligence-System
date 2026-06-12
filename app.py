@@ -95,3 +95,136 @@ with col2:
             "Human Resources"
         ]
     )
+
+# Job Information
+
+st.subheader("Job Information")
+
+col1, col2 = st.columns(2)
+
+with col1:
+
+    department = st.selectbox(
+        "Department",
+        [
+            "Human Resources",
+            "Research & Development",
+            "Sales"
+        ]
+    )
+
+    job_role = st.selectbox(
+        "Job Role",
+        [
+            "Healthcare Representative",
+            "Human Resources",
+            "Laboratory Technician",
+            "Manager",
+            "Manufacturing Director",
+            "Research Director",
+            "Research Scientist",
+            "Sales Executive",
+            "Sales Representative"
+        ]
+    )
+
+    business_travel = st.selectbox(
+        "Business Travel",
+        [
+            "Non-Travel",
+            "Travel_Rarely",
+            "Travel_Frequently"
+        ]
+    )
+
+    overtime = st.selectbox(
+        "OverTime",
+        [
+            "No",
+            "Yes"
+        ]
+    )
+
+with col2:
+
+    job_level = st.slider(
+        "Job Level",
+        1,
+        5,
+        2
+    )
+
+    job_satisfaction = st.slider(
+        "Job Satisfaction",
+        1,
+        4,
+        3
+    )
+
+    job_involvement = st.slider(
+        "Job Involvement",
+        1,
+        4,
+        3
+    )
+
+    environment_satisfaction = st.slider(
+        "Environment Satisfaction",
+        1,
+        4,
+        3
+    )
+    
+    
+# Salary Information and Experience
+
+st.subheader("Salary & Experience")
+
+col1, col2 = st.columns(2)
+
+with col1:
+
+    monthly_income = st.number_input(
+        "Monthly Income",
+        min_value=1000,
+        value=5000
+    )
+
+    total_working_years = st.number_input(
+        "Total Working Years",
+        min_value=0,
+        value=10
+    )
+
+    years_at_company = st.number_input(
+        "Years At Company",
+        min_value=0,
+        value=5
+    )
+
+    years_in_current_role = st.number_input(
+        "Years In Current Role",
+        min_value=0,
+        value=3
+    )
+
+with col2:
+
+    years_since_last_promotion = st.number_input(
+        "Years Since Last Promotion",
+        min_value=0,
+        value=1
+    )
+
+    years_with_curr_manager = st.number_input(
+        "Years With Current Manager",
+        min_value=0,
+        value=3
+    )
+
+    num_companies_worked = st.number_input(
+        "Number of Companies Worked",
+        min_value=0,
+        value=2
+    )
+
