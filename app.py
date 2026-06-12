@@ -450,4 +450,53 @@ if st.button("Predict Attrition Risk"):
         if overtime == "Yes":
             input_data["OverTime_Yes"] = 1
             
-        st.write(input_data)
+        scaled_data = scaler.transform(input_data)
+
+        probability = model.predict(scaled_data)[0][0]
+        
+        # Apply threshold
+        prediction = 1 if probability > 0.6 else 0
+        
+        # Display results
+        st.subheader("Prediction Result")
+
+        st.metric(
+            "Attrition Probability",
+            f"{probability*100:.2f}%"
+        )
+        
+        # Risk badge
+        
+        if probability >= 0.7:
+
+            st.error(
+                "🔴 High Attrition Risk"
+            )
+
+        elif probability >= 0.4:
+
+            st.warning(
+            "🟡 Medium Attrition Risk"
+            )
+
+        else:
+
+            st.success(
+            "🟢 Low Attrition Risk"
+        )
+            
+            
+        # Final decision display
+        
+        if prediction == 1:
+
+            st.error(
+                "Employee Likely To Leave"
+            )
+
+        else:
+
+            st.success(
+                "Employee Likely To Stay"
+            )
+        
