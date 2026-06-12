@@ -384,4 +384,38 @@ if st.button("Predict Attrition Risk"):
         input_data['YearsInCurrentRole'] = years_in_current_role
         input_data['YearsSinceLastPromotion'] = years_since_last_promotion
         input_data['YearsWithCurrManager'] = years_with_curr_manager
+        input_data['DailyRate'] = daily_rate
+        input_data['HourlyRate'] = hourly_rate
+        input_data['MonthlyRate'] = monthly_rate
+        input_data['PercentSalaryHike'] = percent_salary_hike
+        
+        
+        # Business Travel
+        if business_travel == "Travel_Frequently":
+            input_data["BusinessTravel_Travel_Frequently"] = 1
 
+        elif business_travel == "Travel_Rarely":
+            input_data["BusinessTravel_Travel_Rarely"] = 1
+            
+        # Department
+        if department == "Research & Development":
+            input_data["Department_Research & Development"] = 1
+
+        elif department == "Sales":
+            input_data["Department_Sales"] = 1        
+
+        # Education Field
+        if education_field == "Life Sciences":
+            input_data["EducationField_Life Sciences"] = 1
+
+        elif education_field == "Marketing":
+            input_data["EducationField_Marketing"] = 1
+
+        elif education_field == "Medical":
+            input_data["EducationField_Medical"] = 1
+
+        elif education_field == "Other":
+            input_data["EducationField_Other"] = 1
+
+        elif education_field == "Technical Degree":
+            input_data["EducationField_Technical Degree"] = 1
