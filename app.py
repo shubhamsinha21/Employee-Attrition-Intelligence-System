@@ -419,3 +419,35 @@ if st.button("Predict Attrition Risk"):
 
         elif education_field == "Technical Degree":
             input_data["EducationField_Technical Degree"] = 1
+            
+        # Gender
+        if gender == "Male":
+            input_data["Gender_Male"] = 1   
+            
+        # Job Role     
+        role_map = {
+            "Human Resources":"JobRole_Human Resources",
+            "Laboratory Technician":"JobRole_Laboratory Technician",
+            "Manager":"JobRole_Manager",
+            "Manufacturing Director":"JobRole_Manufacturing Director",
+            "Research Director":"JobRole_Research Director",
+            "Research Scientist":"JobRole_Research Scientist",
+            "Sales Executive":"JobRole_Sales Executive",
+            "Sales Representative":"JobRole_Sales Representative"
+        }
+
+        if job_role in role_map:
+            input_data[role_map[job_role]] = 1
+            
+        # Marital Status
+        if marital_status == "Married":
+            input_data["MaritalStatus_Married"] = 1
+
+        elif marital_status == "Single":
+            input_data["MaritalStatus_Single"] = 1
+            
+        # OverTime
+        if overtime == "Yes":
+            input_data["OverTime_Yes"] = 1
+            
+        st.write(input_data)
