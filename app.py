@@ -500,3 +500,7 @@ if st.button("Predict Attrition Risk"):
                 "Employee Likely To Stay"
             )
         
+        # Add confidence level display
+        st.write(
+            f"Model Confidence: {max(probability, 1-probability)*100:.2f}%"
+        )
