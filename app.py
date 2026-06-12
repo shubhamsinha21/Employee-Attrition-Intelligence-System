@@ -228,3 +228,54 @@ with col2:
         value=2
     )
 
+
+# Work metrics
+
+st.subheader("Work Metrics")
+
+col1, col2 = st.columns(2)
+
+with col1:
+
+    distance_from_home = st.number_input(
+        "Distance From Home",
+        min_value=1,
+        value=10
+    )
+
+    work_life_balance = st.slider(
+        "Work Life Balance",
+        1,
+        4,
+        3
+    )
+
+    relationship_satisfaction = st.slider(
+        "Relationship Satisfaction",
+        1,
+        4,
+        3
+    )
+
+with col2:
+
+    training_times_last_year = st.slider(
+        "Training Times Last Year",
+        0,
+        6,
+        2
+    )
+
+    stock_option_level = st.slider(
+        "Stock Option Level",
+        0,
+        3,
+        1
+    )
+
+    performance_rating = st.slider(
+        "Performance Rating",
+        3,
+        4,
+        3
+    )
