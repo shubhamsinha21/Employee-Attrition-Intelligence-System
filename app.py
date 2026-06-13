@@ -77,9 +77,10 @@ section[data-testid="stSidebar"] {
 # --------------------------------
 @st.cache_resource
 def load_artifacts():
-    model = tf.keras.models.load_model(
+    model = load_model(
         "artifacts/employee_attrition_ann.keras",
-        compile=False
+        compile=False,
+        safe_mode=False
     )
     scaler = joblib.load("artifacts/scaler.pkl")
     return model, scaler
