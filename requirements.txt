@@ -1,9 +1,12 @@
 # for stremlit deployment
 
-streamlit
-tensorflow==2.15.0
-numpy==1.26.4
-pandas==2.2.2
+notebook
+numpy
+pandas
+matplotlib
+seaborn
 scikit-learn==1.4.2
+tensorflow==2.14.0
 joblib
+streamlit
 reportlab
