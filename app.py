@@ -7,6 +7,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 os.environ["TF_METAL_DEVICE_PLACEMENT"] = "0"
+os.environ["TF_USE_LEGACY_KERAS"] = "1"
 
 import streamlit as st
 import pandas as pd
@@ -77,10 +78,10 @@ section[data-testid="stSidebar"] {
 # --------------------------------
 @st.cache_resource
 def load_artifacts():
-    model = load_model(
+    model = tf.keras.models.load_model(
         "artifacts/employee_attrition_ann.keras",
         compile=False,
-        safe_mode=False
+        custom_objects=None
     )
     scaler = joblib.load("artifacts/scaler.pkl")
     return model, scaler
