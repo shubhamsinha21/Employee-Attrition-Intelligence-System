@@ -124,21 +124,15 @@ attrition_report.pdf (sample output)
 ## 📸 Application Screenshots
 
 ### 🏠 Main Dashboard
-![Dashboard](images/ui-1.png)
+![Dashboard](ui-images/ui-1.png)
 
 ---
 
-!(images/ui-2.png)
+!(ui-images/ui-2.png)
 
 ---
 
-!(images/ui-3.png)
-
----
-
-### 📄 PDF Report Preview
-![PDF Report](images/pdf_report.png)
-
+!(ui-images/ui-3.png)
 
 ---
 
