@@ -16,6 +16,10 @@ import tensorflow as tf
 from tensorflow.keras.models import load_model
 import time
 
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
+import io
+
 # --------------------------------
 # PAGE CONFIG
 # --------------------------------
@@ -30,20 +34,16 @@ st.set_page_config(
 # --------------------------------
 st.markdown("""
 <style>
-
-/* Background */
 .stApp {
     background: linear-gradient(135deg, #0f172a, #111827);
     color: #e5e7eb;
 }
 
-/* Titles */
 h1, h2, h3 {
     color: #f9fafb !important;
     font-weight: 700;
 }
 
-/* Button styling (MAIN CHANGE) */
 div.stButton > button {
     background: linear-gradient(90deg, #22c55e, #16a34a);
     color: white;
@@ -60,30 +60,24 @@ div.stButton > button:hover {
     box-shadow: 0px 6px 18px rgba(34,197,94,0.5);
 }
 
-/* Metrics cards */
 [data-testid="stMetric"] {
     background: rgba(255,255,255,0.05);
     padding: 10px;
     border-radius: 10px;
 }
 
-/* Sidebar (if used later) */
 section[data-testid="stSidebar"] {
     background-color: #0b1220;
 }
-
 </style>
 """, unsafe_allow_html=True)
 
 # --------------------------------
-# LOAD MODEL + SCALER (CACHE SAFE)
+# LOAD MODEL + SCALER
 # --------------------------------
 @st.cache_resource
 def load_artifacts():
-    model = load_model(
-        "artifacts/employee_attrition_ann.keras",
-        compile=False
-    )
+    model = load_model("artifacts/employee_attrition_ann.keras", compile=False)
     scaler = joblib.load("artifacts/scaler.pkl")
     return model, scaler
 
@@ -94,7 +88,6 @@ model, scaler = load_artifacts()
 # --------------------------------
 st.title("📊 Employee Attrition Prediction System")
 st.markdown("AI-powered ANN model to predict employee attrition risk.")
-
 st.markdown("---")
 
 # --------------------------------
@@ -193,7 +186,39 @@ feature_columns = [
 ]
 
 # --------------------------------
-# PREDICTION + UX ENHANCED FLOW
+# PDF REPORT FUNCTION
+# --------------------------------
+def generate_pdf_report(probability, risk_level,
+                        salary_risk, overtime_risk,
+                        satisfaction_risk, experience_risk,
+                        stability_risk):
+
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer)
+
+    styles = getSampleStyleSheet()
+    story = []
+
+    story.append(Paragraph("Employee Attrition Report", styles["Title"]))
+    story.append(Spacer(1, 12))
+
+    story.append(Paragraph(f"Attrition Probability: {probability*100:.2f}%", styles["Normal"]))
+    story.append(Paragraph(f"Risk Level: {risk_level}", styles["Normal"]))
+    story.append(Spacer(1, 12))
+
+    story.append(Paragraph("Risk Breakdown", styles["Heading2"]))
+    story.append(Paragraph(f"Salary Risk: {salary_risk}%", styles["Normal"]))
+    story.append(Paragraph(f"Overtime Risk: {overtime_risk}%", styles["Normal"]))
+    story.append(Paragraph(f"Satisfaction Risk: {satisfaction_risk:.1f}%", styles["Normal"]))
+    story.append(Paragraph(f"Experience Risk: {experience_risk}%", styles["Normal"]))
+    story.append(Paragraph(f"Stability Risk: {stability_risk}%", styles["Normal"]))
+
+    doc.build(story)
+    buffer.seek(0)
+    return buffer
+
+# --------------------------------
+# PREDICTION FLOW
 # --------------------------------
 if st.button("🚀 Predict Attrition Risk"):
 
@@ -201,16 +226,13 @@ if st.button("🚀 Predict Attrition Risk"):
         progress = st.progress(0)
         status = st.empty()
 
-        status.info("🔄 Preparing input...")
+        status.info("Preparing input...")
         progress.progress(20)
         time.sleep(0.2)
 
-        input_data = pd.DataFrame(
-            np.zeros((1, len(feature_columns))),
-            columns=feature_columns
-        )
+        input_data = pd.DataFrame(np.zeros((1, len(feature_columns))), columns=feature_columns)
 
-        # numeric features
+        # numeric
         input_data['Age'] = age
         input_data['DailyRate'] = daily_rate
         input_data['DistanceFromHome'] = distance_from_home
@@ -234,9 +256,6 @@ if st.button("🚀 Predict Attrition Risk"):
         input_data['YearsInCurrentRole'] = years_in_current_role
         input_data['YearsSinceLastPromotion'] = years_since_last_promotion
         input_data['YearsWithCurrManager'] = years_with_curr_manager
-
-        status.info("⚙ Scaling input...")
-        progress.progress(50)
 
         # categorical
         if business_travel == "Travel_Frequently":
@@ -287,7 +306,7 @@ if st.button("🚀 Predict Attrition Risk"):
 
         input_data = input_data[feature_columns]
 
-        status.info("🤖 Running AI model...")
+        status.info("Running model...")
         progress.progress(80)
 
         scaled_data = scaler.transform(input_data).astype(np.float32)
@@ -299,65 +318,60 @@ if st.button("🚀 Predict Attrition Risk"):
         probability = float(prediction_raw[0][0])
 
         progress.progress(100)
-        status.success("✅ Prediction Completed")
+        status.success("Done")
 
         st.markdown("---")
 
-        # RESULTS
-        st.subheader("📊 Prediction Result")
+        # results
+        st.subheader("Prediction Result")
 
-        col1, col2, col3 = st.columns(3)
-
-        col1.metric("Attrition Probability", f"{probability*100:.2f}%")
-        col2.metric(
-            "Risk Level",
-            "🔴 High" if probability >= 0.7 else "🟡 Medium" if probability >= 0.4 else "🟢 Low"
-        )
-        col3.metric(
-            "Model Confidence",
-            f"{(1 - abs(0.5 - probability))*100:.1f}%"
+        risk_level = (
+            "High" if probability >= 0.7 else
+            "Medium" if probability >= 0.4 else
+            "Low"
         )
 
-        st.markdown("---")
+        st.metric("Probability", f"{probability*100:.2f}%")
+        st.metric("Risk Level", risk_level)
 
-        # RISK DASHBOARD
-        st.subheader("📊 Risk Breakdown Dashboard")
-
+        # risk
         salary_risk = 80 if monthly_income < 3000 else 50 if monthly_income < 6000 else 20
         overtime_risk = 80 if overtime == "Yes" else 20
-
         satisfaction_risk = (
             (4 - job_satisfaction) * 20 +
             (4 - environment_satisfaction) * 15 +
             (4 - relationship_satisfaction) * 15
         )
-
         experience_risk = 80 if total_working_years < 3 else 40 if total_working_years < 7 else 20
-
         stability_risk = 80 if years_at_company < 2 else 50 if years_at_company < 5 else 25
 
-        col1, col2 = st.columns(2)
+        st.subheader("Risk Breakdown")
 
-        with col1:
-            st.metric("💰 Salary Risk", f"{salary_risk}%")
-            st.metric("⏱ Overtime Risk", f"{overtime_risk}%")
-            st.metric("🧠 Satisfaction Risk", f"{int(satisfaction_risk)}%")
+        st.write({
+            "Salary Risk": salary_risk,
+            "Overtime Risk": overtime_risk,
+            "Satisfaction Risk": satisfaction_risk,
+            "Experience Risk": experience_risk,
+            "Stability Risk": stability_risk
+        })
 
-        with col2:
-            st.metric("📈 Experience Risk", f"{experience_risk}%")
-            st.metric("🏢 Stability Risk", f"{stability_risk}%")
+        # download report button (NOW CORRECT PLACE)
+        pdf_buffer = generate_pdf_report(
+            probability,
+            risk_level,
+            salary_risk,
+            overtime_risk,
+            satisfaction_risk,
+            experience_risk,
+            stability_risk
+        )
 
-        avg_risk = (salary_risk + overtime_risk + satisfaction_risk +
-                    experience_risk + stability_risk) / 5
-
-        st.markdown("### 🔎 Overall External Risk")
-
-        if avg_risk > 60:
-            st.error(f"🚨 High Risk Environment ({avg_risk:.1f}%)")
-        elif avg_risk > 35:
-            st.warning(f"⚠️ Medium Risk Environment ({avg_risk:.1f}%)")
-        else:
-            st.success(f"✅ Low Risk Environment ({avg_risk:.1f}%)")
+        st.download_button(
+            "📥 Download Report",
+            pdf_buffer,
+            file_name="attrition_report.pdf",
+            mime="application/pdf"
+        )
 
     except Exception as e:
         st.error("Prediction Failed")
