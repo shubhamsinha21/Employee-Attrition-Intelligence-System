@@ -18,6 +18,21 @@ Built with a **production-style ML pipeline + interactive Streamlit UI**.
 
 ---
 
+## 📸 Application Screenshots
+
+### 🏠 Main Dashboard
+![Dashboard View 1](ui-images/ui-1.png)
+
+---
+
+![Dashboard View 2](ui-images/ui-2.png)
+
+---
+
+![Prediction View](ui-images/ui-3.png)
+
+---
+
 ## 🎯 Key Features
 
 ### 🤖 AI Prediction Engine
@@ -118,21 +133,6 @@ attrition_report.pdf (sample output)
 | Risk Level | Low / Medium / High classification |
 | Confidence Score | Model certainty indicator |
 | Risk Breakdown | Business-driven heuristic analysis |
-
----
-
-## 📸 Application Screenshots
-
-### 🏠 Main Dashboard
-![Dashboard View 1](ui-images/ui-1.png)
-
----
-
-![Dashboard View 2](ui-images/ui-3.png)
-
----
-
-![Prediction View](ui-images/ui-3.png)
 
 ---
 
