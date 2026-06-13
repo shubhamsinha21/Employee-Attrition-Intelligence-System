@@ -13,7 +13,7 @@ import pandas as pd
 import numpy as np
 import joblib
 import tensorflow as tf
-from tensorflow import keras
+import keras
 load_model = keras.models.load_model
 import time
 
@@ -76,6 +76,7 @@ section[data-testid="stSidebar"] {
 # --------------------------------
 # LOAD MODEL + SCALER
 # --------------------------------
+@st.cache_resource
 @st.cache_resource
 def load_artifacts():
     model = load_model(
