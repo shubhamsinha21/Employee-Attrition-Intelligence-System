@@ -86,7 +86,7 @@ model, scaler = load_artifacts()
 # --------------------------------
 # HEADER
 # --------------------------------
-st.title("📊 Employee Attrition Prediction System")
+st.title("📊 Employee Attrition Intelligence System")
 st.markdown("AI-powered ANN model to predict employee attrition risk.")
 st.markdown("---")
 
