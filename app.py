@@ -7,15 +7,14 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 os.environ["TF_METAL_DEVICE_PLACEMENT"] = "0"
-os.environ["TF_USE_LEGACY_KERAS"] = "1"
 
 import streamlit as st
 import pandas as pd
 import numpy as np
 import joblib
 import tensorflow as tf
-import tensorflow as tf
-load_model = tf.keras.models.load_model
+from tensorflow import keras
+load_model = keras.models.load_model
 import time
 
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
