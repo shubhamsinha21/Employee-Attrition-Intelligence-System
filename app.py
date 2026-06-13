@@ -25,14 +25,11 @@ st.set_page_config(
 )
 
 # --------------------------------
-# LOAD MODEL + SCALER (CACHE SAFE)
+# LOAD MODEL + SCALER
 # --------------------------------
 @st.cache_resource
 def load_artifacts():
-    model = load_model(
-        "artifacts/employee_attrition_ann.keras",
-        compile=False
-    )
+    model = load_model("artifacts/employee_attrition_ann.keras", compile=False)
     scaler = joblib.load("artifacts/scaler.pkl")
     return model, scaler
 
@@ -42,10 +39,7 @@ model, scaler = load_artifacts()
 # HEADER
 # --------------------------------
 st.title("📊 Employee Attrition Prediction System")
-
-st.markdown("""
-AI-powered ANN model to predict employee attrition risk.
-""")
+st.markdown("AI-powered ANN model to predict employee attrition risk.")
 
 # --------------------------------
 # INPUT UI
@@ -143,21 +137,16 @@ feature_columns = [
 ]
 
 # --------------------------------
-# PREDICTION (FIXED SAFE MODE + DASHBOARD)
+# PREDICTION + DASHBOARD
 # --------------------------------
 if st.button("Predict Attrition Risk"):
 
     try:
         st.write("🔄 Preparing input...")
 
-        input_data = pd.DataFrame(
-            np.zeros((1, len(feature_columns))),
-            columns=feature_columns
-        )
+        input_data = pd.DataFrame(np.zeros((1, len(feature_columns))), columns=feature_columns)
 
-        # -------------------------
-        # numeric features
-        # -------------------------
+        # numeric
         input_data['Age'] = age
         input_data['DailyRate'] = daily_rate
         input_data['DistanceFromHome'] = distance_from_home
@@ -182,9 +171,7 @@ if st.button("Predict Attrition Risk"):
         input_data['YearsSinceLastPromotion'] = years_since_last_promotion
         input_data['YearsWithCurrManager'] = years_with_curr_manager
 
-        # -------------------------
-        # categorical features
-        # -------------------------
+        # categorical
         if business_travel == "Travel_Frequently":
             input_data["BusinessTravel_Travel_Frequently"] = 1
         elif business_travel == "Travel_Rarely":
@@ -233,9 +220,6 @@ if st.button("Predict Attrition Risk"):
 
         input_data = input_data[feature_columns]
 
-        # -------------------------
-        # scaling + prediction
-        # -------------------------
         st.write("⚙ Scaling input...")
         scaled_data = scaler.transform(input_data).astype(np.float32)
 
@@ -249,10 +233,9 @@ if st.button("Predict Attrition Risk"):
 
         st.success("Prediction Completed")
 
-        # ==================================================
-        # 📊 RISK DASHBOARD (NEW ADDITION)
-        # ==================================================
-
+        # -----------------------------
+        # RISK DASHBOARD
+        # -----------------------------
         st.subheader("📊 Risk Breakdown Dashboard")
 
         salary_risk = 80 if monthly_income < 3000 else 50 if monthly_income < 6000 else 20
@@ -282,8 +265,6 @@ if st.button("Predict Attrition Risk"):
         avg_risk = (salary_risk + overtime_risk + satisfaction_risk +
                     experience_risk + stability_risk) / 5
 
-        st.markdown("### 🔎 Overall External Risk")
-
         if avg_risk > 60:
             st.error(f"🚨 High Risk Environment ({avg_risk:.1f}%)")
         elif avg_risk > 35:
@@ -291,12 +272,10 @@ if st.button("Predict Attrition Risk"):
         else:
             st.success(f"✅ Low Risk Environment ({avg_risk:.1f}%)")
 
-        # ==================================================
-        # 🎯 FINAL MODEL OUTPUT
-        # ==================================================
-
+        # -----------------------------
+        # FINAL OUTPUT
+        # -----------------------------
         st.subheader("🎯 Model Prediction")
-
         st.metric("Attrition Probability", f"{probability * 100:.2f}%")
 
         if probability >= 0.7:
