@@ -11,3 +11,5 @@ keras==2.15.0
 tf-keras
 
 protobuf<5
+
+reportlab
