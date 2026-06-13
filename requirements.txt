@@ -1,15 +1,10 @@
-# for stremlit deployment
-
-streamlit==1.58.0
-numpy<2
+notebook
+numpy
 pandas
-scikit-learn
+matplotlib
+seaborn
+scikit-learn==1.4.2
+tensorflow
 joblib
-
-tensorflow==2.15.0
-keras==2.15.0
-tf-keras
-
-protobuf<5
-
+streamlit
 reportlab

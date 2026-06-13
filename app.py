@@ -13,8 +13,7 @@ import pandas as pd
 import numpy as np
 import joblib
 import tensorflow as tf
-import keras
-load_model = keras.models.load_model
+from tensorflow.keras.models import load_model
 import time
 
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
@@ -77,12 +76,8 @@ section[data-testid="stSidebar"] {
 # LOAD MODEL + SCALER
 # --------------------------------
 @st.cache_resource
-@st.cache_resource
 def load_artifacts():
-    model = load_model(
-        "artifacts/employee_attrition_ann.keras",
-        compile=False
-    )
+    model = load_model("artifacts/employee_attrition_ann.keras", compile=False)
     scaler = joblib.load("artifacts/scaler.pkl")
     return model, scaler
 
