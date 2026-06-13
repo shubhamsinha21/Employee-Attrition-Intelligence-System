@@ -14,6 +14,7 @@ import numpy as np
 import joblib
 import tensorflow as tf
 from tensorflow.keras.models import load_model
+import time
 
 # --------------------------------
 # PAGE CONFIG
@@ -23,6 +24,56 @@ st.set_page_config(
     page_icon="📊",
     layout="wide"
 )
+
+# --------------------------------
+# 🎨 UI THEME ENHANCEMENT (SAFE CSS ONLY)
+# --------------------------------
+st.markdown("""
+<style>
+
+/* Background */
+.stApp {
+    background: linear-gradient(135deg, #0f172a, #111827);
+    color: #e5e7eb;
+}
+
+/* Titles */
+h1, h2, h3 {
+    color: #f9fafb !important;
+    font-weight: 700;
+}
+
+/* Button styling (MAIN CHANGE) */
+div.stButton > button {
+    background: linear-gradient(90deg, #22c55e, #16a34a);
+    color: white;
+    font-weight: 700;
+    border-radius: 10px;
+    padding: 0.6rem 1rem;
+    border: none;
+    transition: 0.3s ease;
+    box-shadow: 0px 4px 12px rgba(34,197,94,0.3);
+}
+
+div.stButton > button:hover {
+    transform: scale(1.03);
+    box-shadow: 0px 6px 18px rgba(34,197,94,0.5);
+}
+
+/* Metrics cards */
+[data-testid="stMetric"] {
+    background: rgba(255,255,255,0.05);
+    padding: 10px;
+    border-radius: 10px;
+}
+
+/* Sidebar (if used later) */
+section[data-testid="stSidebar"] {
+    background-color: #0b1220;
+}
+
+</style>
+""", unsafe_allow_html=True)
 
 # --------------------------------
 # LOAD MODEL + SCALER (CACHE SAFE)
@@ -42,10 +93,9 @@ model, scaler = load_artifacts()
 # HEADER
 # --------------------------------
 st.title("📊 Employee Attrition Prediction System")
+st.markdown("AI-powered ANN model to predict employee attrition risk.")
 
-st.markdown("""
-AI-powered ANN model to predict employee attrition risk.
-""")
+st.markdown("---")
 
 # --------------------------------
 # INPUT UI
@@ -143,21 +193,24 @@ feature_columns = [
 ]
 
 # --------------------------------
-# PREDICTION (FIXED SAFE MODE + DASHBOARD)
+# PREDICTION + UX ENHANCED FLOW
 # --------------------------------
-if st.button("Predict Attrition Risk"):
+if st.button("🚀 Predict Attrition Risk"):
 
     try:
-        st.write("🔄 Preparing input...")
+        progress = st.progress(0)
+        status = st.empty()
+
+        status.info("🔄 Preparing input...")
+        progress.progress(20)
+        time.sleep(0.2)
 
         input_data = pd.DataFrame(
             np.zeros((1, len(feature_columns))),
             columns=feature_columns
         )
 
-        # -------------------------
         # numeric features
-        # -------------------------
         input_data['Age'] = age
         input_data['DailyRate'] = daily_rate
         input_data['DistanceFromHome'] = distance_from_home
@@ -182,9 +235,10 @@ if st.button("Predict Attrition Risk"):
         input_data['YearsSinceLastPromotion'] = years_since_last_promotion
         input_data['YearsWithCurrManager'] = years_with_curr_manager
 
-        # -------------------------
-        # categorical features
-        # -------------------------
+        status.info("⚙ Scaling input...")
+        progress.progress(50)
+
+        # categorical
         if business_travel == "Travel_Frequently":
             input_data["BusinessTravel_Travel_Frequently"] = 1
         elif business_travel == "Travel_Rarely":
@@ -233,13 +287,10 @@ if st.button("Predict Attrition Risk"):
 
         input_data = input_data[feature_columns]
 
-        # -------------------------
-        # scaling + prediction
-        # -------------------------
-        st.write("⚙ Scaling input...")
-        scaled_data = scaler.transform(input_data).astype(np.float32)
+        status.info("🤖 Running AI model...")
+        progress.progress(80)
 
-        st.write("🤖 Predicting...")
+        scaled_data = scaler.transform(input_data).astype(np.float32)
 
         with tf.device('/CPU:0'):
             x = tf.convert_to_tensor(scaled_data)
@@ -247,12 +298,29 @@ if st.button("Predict Attrition Risk"):
 
         probability = float(prediction_raw[0][0])
 
-        st.success("Prediction Completed")
+        progress.progress(100)
+        status.success("✅ Prediction Completed")
 
-        # ==================================================
-        # 📊 RISK DASHBOARD (NEW ADDITION)
-        # ==================================================
+        st.markdown("---")
 
+        # RESULTS
+        st.subheader("📊 Prediction Result")
+
+        col1, col2, col3 = st.columns(3)
+
+        col1.metric("Attrition Probability", f"{probability*100:.2f}%")
+        col2.metric(
+            "Risk Level",
+            "🔴 High" if probability >= 0.7 else "🟡 Medium" if probability >= 0.4 else "🟢 Low"
+        )
+        col3.metric(
+            "Model Confidence",
+            f"{(1 - abs(0.5 - probability))*100:.1f}%"
+        )
+
+        st.markdown("---")
+
+        # RISK DASHBOARD
         st.subheader("📊 Risk Breakdown Dashboard")
 
         salary_risk = 80 if monthly_income < 3000 else 50 if monthly_income < 6000 else 20
@@ -290,21 +358,6 @@ if st.button("Predict Attrition Risk"):
             st.warning(f"⚠️ Medium Risk Environment ({avg_risk:.1f}%)")
         else:
             st.success(f"✅ Low Risk Environment ({avg_risk:.1f}%)")
-
-        # ==================================================
-        # 🎯 FINAL MODEL OUTPUT
-        # ==================================================
-
-        st.subheader("🎯 Model Prediction")
-
-        st.metric("Attrition Probability", f"{probability * 100:.2f}%")
-
-        if probability >= 0.7:
-            st.error("🔴 High Attrition Risk")
-        elif probability >= 0.4:
-            st.warning("🟡 Medium Attrition Risk")
-        else:
-            st.success("🟢 Low Attrition Risk")
 
     except Exception as e:
         st.error("Prediction Failed")
