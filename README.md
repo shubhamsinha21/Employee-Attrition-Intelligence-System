@@ -109,7 +109,6 @@ attrition_report.pdf (sample output)
 
 ```
 
-
 ---
 
 ## 🚀 How It Works
