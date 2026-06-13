@@ -124,15 +124,15 @@ attrition_report.pdf (sample output)
 ## 📸 Application Screenshots
 
 ### 🏠 Main Dashboard
-![Dashboard](ui-images/ui-1.png)
+![Dashboard View 1](ui-images/ui-1.png)
 
 ---
 
-!(ui-images/ui-2.png)
+![Dashboard View 2](ui-images/ui-3.png)
 
 ---
 
-!(ui-images/ui-3.png)
+![Prediction View](ui-images/ui-3.png)
 
 ---
 
@@ -146,6 +146,8 @@ cd employee-attrition-intelligence-system
 pip install -r requirements.txt
 
 streamlit run app.py
+
+```
 
 ## 🌐 Deployment
 
