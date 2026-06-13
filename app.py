@@ -143,7 +143,7 @@ feature_columns = [
 ]
 
 # --------------------------------
-# PREDICTION (FIXED SAFE MODE)
+# PREDICTION (FIXED SAFE MODE + DASHBOARD)
 # --------------------------------
 if st.button("Predict Attrition Risk"):
 
@@ -155,7 +155,9 @@ if st.button("Predict Attrition Risk"):
             columns=feature_columns
         )
 
-        # numeric
+        # -------------------------
+        # numeric features
+        # -------------------------
         input_data['Age'] = age
         input_data['DailyRate'] = daily_rate
         input_data['DistanceFromHome'] = distance_from_home
@@ -180,7 +182,9 @@ if st.button("Predict Attrition Risk"):
         input_data['YearsSinceLastPromotion'] = years_since_last_promotion
         input_data['YearsWithCurrManager'] = years_with_curr_manager
 
-        # categorical
+        # -------------------------
+        # categorical features
+        # -------------------------
         if business_travel == "Travel_Frequently":
             input_data["BusinessTravel_Travel_Frequently"] = 1
         elif business_travel == "Travel_Rarely":
@@ -229,16 +233,13 @@ if st.button("Predict Attrition Risk"):
 
         input_data = input_data[feature_columns]
 
+        # -------------------------
+        # scaling + prediction
+        # -------------------------
         st.write("⚙ Scaling input...")
-
         scaled_data = scaler.transform(input_data).astype(np.float32)
 
         st.write("🤖 Predicting...")
-
-        # -------------------------------
-        # 🔥 SAFE INFERENCE (NO model.predict)
-        # -------------------------------
-        tf.keras.backend.clear_session()
 
         with tf.device('/CPU:0'):
             x = tf.convert_to_tensor(scaled_data)
@@ -248,14 +249,62 @@ if st.button("Predict Attrition Risk"):
 
         st.success("Prediction Completed")
 
+        # ==================================================
+        # 📊 RISK DASHBOARD (NEW ADDITION)
+        # ==================================================
+
+        st.subheader("📊 Risk Breakdown Dashboard")
+
+        salary_risk = 80 if monthly_income < 3000 else 50 if monthly_income < 6000 else 20
+        overtime_risk = 80 if overtime == "Yes" else 20
+
+        satisfaction_risk = (
+            (4 - job_satisfaction) * 20 +
+            (4 - environment_satisfaction) * 15 +
+            (4 - relationship_satisfaction) * 15
+        )
+
+        experience_risk = 80 if total_working_years < 3 else 40 if total_working_years < 7 else 20
+
+        stability_risk = 80 if years_at_company < 2 else 50 if years_at_company < 5 else 25
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.metric("💰 Salary Risk", f"{salary_risk}%")
+            st.metric("⏱ Overtime Risk", f"{overtime_risk}%")
+            st.metric("🧠 Satisfaction Risk", f"{int(satisfaction_risk)}%")
+
+        with col2:
+            st.metric("📈 Experience Risk", f"{experience_risk}%")
+            st.metric("🏢 Stability Risk", f"{stability_risk}%")
+
+        avg_risk = (salary_risk + overtime_risk + satisfaction_risk +
+                    experience_risk + stability_risk) / 5
+
+        st.markdown("### 🔎 Overall External Risk")
+
+        if avg_risk > 60:
+            st.error(f"🚨 High Risk Environment ({avg_risk:.1f}%)")
+        elif avg_risk > 35:
+            st.warning(f"⚠️ Medium Risk Environment ({avg_risk:.1f}%)")
+        else:
+            st.success(f"✅ Low Risk Environment ({avg_risk:.1f}%)")
+
+        # ==================================================
+        # 🎯 FINAL MODEL OUTPUT
+        # ==================================================
+
+        st.subheader("🎯 Model Prediction")
+
         st.metric("Attrition Probability", f"{probability * 100:.2f}%")
 
         if probability >= 0.7:
-            st.error("🔴 High Risk")
+            st.error("🔴 High Attrition Risk")
         elif probability >= 0.4:
-            st.warning("🟡 Medium Risk")
+            st.warning("🟡 Medium Attrition Risk")
         else:
-            st.success("🟢 Low Risk")
+            st.success("🟢 Low Attrition Risk")
 
     except Exception as e:
         st.error("Prediction Failed")
